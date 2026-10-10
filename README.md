@@ -10,6 +10,37 @@ The business-logic project provides asynchronous CRUD operations for `Forecast`,
 
 Each service provides `InsertAsync`, `UpdateAsync`, `DeleteAsync` (by primary key), and `GetByIdAsync`. Primary-key queries include only the entity's immediate navigation properties. Collection elements and referenced entities are not expanded further, preventing recursive navigation loading.
 
+### Queries
+
+The `Quiniela.BusinessLogic.Queries` namespace contains read-only, projection-based queries that go beyond single-entity lookups.
+
+#### `MatchQueryBusinessLogic`
+
+Provides two queries that both return `Task<List<MatchSummaryRecord>>`, sorted chronologically ascending by the date the match was played.
+
+| Method | Parameters | Description |
+|--------|-----------|-------------|
+| `GetMatchesByTeamAsync` | `teamId`, `from`, `to` | All matches in which the team participated (home **or** away) within the inclusive date interval `[from, to]`. |
+| `GetMatchesByTournamentAsync` | `tournamentId` | All matches that belong to the given tournament. |
+
+#### `MatchSummaryRecord`
+
+The shared return type for both queries. Each record contains:
+
+| Field | Type | Notes |
+|-------|------|-------|
+| `TournamentName` | `string?` | `null` when the match is not part of any tournament. |
+| `TournamentSeason` | `string?` | `null` when the match is not part of any tournament. |
+| `TournamentSportName` | `string?` | `null` when the match is not part of any tournament. |
+| `MatchId` | `int` | |
+| `MatchKind` | `string` | `"Friendly"` or `"Official"`. |
+| `HomeTeamName` | `string` | |
+| `AwayTeamName` | `string` | |
+| `DatePlayed` | `DateTime` | |
+| `StatusName` | `string` | `"Scheduled"`, `"Live"`, or `"Finished"`. |
+| `HomeScore` | `int?` | `null` when the match has not been played yet. |
+| `AwayScore` | `int?` | `null` when the match has not been played yet. |
+
 Run it with the real scores followed by the guessed scores:
 
 ```powershell
