@@ -4,6 +4,12 @@
 
 Console application for comparing a real match score with a user's prediction. The scoring rules live in the referenced `Quiniela.BusinessLogic` class library, so they can be reused independently of the terminal application.
 
+## Quiniela.BusinessLogic
+
+The business-logic project provides asynchronous CRUD operations for `Forecast`, `Match`, `Team`, `Tournament`, `TournamentParticipant`, and `User` through entity-specific business-logic classes. Each class inherits the shared operations from the abstract `EntityBusinessLogic<TEntity>` class and receives a configured `QuinielaDbContext`.
+
+Each service provides `InsertAsync`, `UpdateAsync`, `DeleteAsync` (by primary key), and `GetByIdAsync`. Primary-key queries include only the entity's immediate navigation properties. Collection elements and referenced entities are not expanded further, preventing recursive navigation loading.
+
 Run it with the real scores followed by the guessed scores:
 
 ```powershell
