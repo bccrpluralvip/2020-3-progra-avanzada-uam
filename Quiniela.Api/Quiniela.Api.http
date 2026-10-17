@@ -1,0 +1,191 @@
+@baseUrl = http://localhost:5053/api
+
+### List forecasts (pageNumber/pageSize default to 1 and 10)
+GET {{baseUrl}}/forecasts
+
+### Get one forecast
+GET {{baseUrl}}/forecasts/1
+
+### Create forecast
+POST {{baseUrl}}/forecasts
+Content-Type: application/json
+
+{
+  "userId": 1,
+  "matchId": 1,
+  "predictedHomeScore": 2,
+  "predictedAwayScore": 1,
+  "submittedAt": "2026-10-17T17:30:00Z"
+}
+
+### Replace forecast
+PUT {{baseUrl}}/forecasts/1
+Content-Type: application/json
+
+{
+  "userId": 1,
+  "matchId": 1,
+  "predictedHomeScore": 1,
+  "predictedAwayScore": 1,
+  "submittedAt": "2026-10-17T17:30:00Z"
+}
+
+### Delete forecast
+DELETE {{baseUrl}}/forecasts/1
+
+### List matches
+GET {{baseUrl}}/matches
+
+### Get one match
+GET {{baseUrl}}/matches/1
+
+### Create match
+POST {{baseUrl}}/matches
+Content-Type: application/json
+
+{
+  "tournamentId": 1,
+  "matchKind": "Official",
+  "sport": "Soccer",
+  "homeTeamId": 1,
+  "awayTeamId": 2,
+  "playedAt": "2026-10-17T18:30:00Z",
+  "status": "Scheduled",
+  "statsJson": {}
+}
+
+### Replace match
+PUT {{baseUrl}}/matches/1
+Content-Type: application/json
+
+{
+  "tournamentId": 1,
+  "matchKind": "Official",
+  "sport": "Soccer",
+  "homeTeamId": 1,
+  "awayTeamId": 2,
+  "playedAt": "2026-10-17T18:30:00Z",
+  "status": "Live",
+  "statsJson": {}
+}
+
+### Delete match
+DELETE {{baseUrl}}/matches/1
+
+### List teams
+GET {{baseUrl}}/teams
+
+### Get one team
+GET {{baseUrl}}/teams/1
+
+### Create team
+POST {{baseUrl}}/teams
+Content-Type: application/json
+
+{
+  "name": "Example City",
+  "shortName": "EXC",
+  "sport": "Soccer"
+}
+
+### Replace team
+PUT {{baseUrl}}/teams/1
+Content-Type: application/json
+
+{
+  "name": "Example City",
+  "shortName": "EXC",
+  "sport": "Soccer"
+}
+
+### Delete team
+DELETE {{baseUrl}}/teams/1
+
+### List tournaments
+GET {{baseUrl}}/tournaments
+
+### Get one tournament
+GET {{baseUrl}}/tournaments/1
+
+### Create tournament
+POST {{baseUrl}}/tournaments
+Content-Type: application/json
+
+{
+  "name": "Example League",
+  "season": "2026",
+  "sport": "Soccer"
+}
+
+### Replace tournament
+PUT {{baseUrl}}/tournaments/1
+Content-Type: application/json
+
+{
+  "name": "Example League",
+  "season": "2026",
+  "sport": "Soccer"
+}
+
+### Delete tournament
+DELETE {{baseUrl}}/tournaments/1
+
+### List tournament participants
+GET {{baseUrl}}/tournament-participants
+
+### Get one tournament participant
+GET {{baseUrl}}/tournament-participants/1
+
+### Add a team to a tournament
+POST {{baseUrl}}/tournament-participants
+Content-Type: application/json
+
+{
+  "tournamentId": 1,
+  "teamId": 1
+}
+
+### Replace tournament participant
+PUT {{baseUrl}}/tournament-participants/1
+Content-Type: application/json
+
+{
+  "tournamentId": 1,
+  "teamId": 2
+}
+
+### Remove a team from a tournament
+DELETE {{baseUrl}}/tournament-participants/1
+
+### List users
+GET {{baseUrl}}/users
+
+### Get one user
+GET {{baseUrl}}/users/1
+
+### Create user
+POST {{baseUrl}}/users
+Content-Type: application/json
+
+{
+  "username": "example-user",
+  "email": "example@example.com"
+}
+
+### Replace user
+PUT {{baseUrl}}/users/1
+Content-Type: application/json
+
+{
+  "username": "example-user",
+  "email": "example@example.com"
+}
+
+### Delete user
+DELETE {{baseUrl}}/users/1
+
+### Get tournament matches (page defaults to 1, page size to 10)
+GET {{baseUrl}}/queries/matches/by-tournament/1
+
+### Get team matches within date range
+GET {{baseUrl}}/queries/matches/by-team/1?from=2026-01-01T00:00:00Z&to=2026-12-31T23:59:59Z&pageNumber=1&pageSize=10
