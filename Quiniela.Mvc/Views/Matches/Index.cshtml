@@ -1,0 +1,148 @@
+@model MatchListViewModel
+@using Quiniela.Model
+
+@{
+    ViewData["Title"] = "Matches";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h1>Matches</h1>
+        <p class="text-muted mb-0">Browse matches and expand a row to see forecasts.</p>
+    </div>
+    <a asp-action="Create" class="btn btn-primary">Insert match</a>
+</div>
+
+<form asp-action="Index" method="get" class="row g-3 align-items-end mb-4">
+    <div class="col-md-4">
+        <label for="tournamentId" class="form-label">Tournament</label>
+        <select id="tournamentId" name="tournamentId" asp-items="Model.Tournaments" class="form-select">
+            <option value="">All tournaments</option>
+        </select>
+    </div>
+    <div class="col-md-4">
+        <label for="teamId" class="form-label">Team</label>
+        <select id="teamId" name="teamId" asp-items="Model.Teams" class="form-select">
+            <option value="">All teams</option>
+        </select>
+    </div>
+    <div class="col-md-2">
+        <label for="pageSize" class="form-label">Page size</label>
+        <input id="pageSize" name="pageSize" type="number" min="1" max="100" value="@Model.PageSize" class="form-control" />
+    </div>
+    <div class="col-md-2 d-flex gap-2">
+        <button type="submit" class="btn btn-outline-primary">Apply</button>
+        <a asp-action="Index" class="btn btn-outline-secondary">Clear</a>
+    </div>
+    <input type="hidden" name="pageNumber" value="1" />
+</form>
+
+@if (Model.Matches.Count == 0)
+{
+    <div class="alert alert-info">No matches were found for the selected filters.</div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-striped table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Match</th>
+                    <th>Tournament</th>
+                    <th>Kind</th>
+                    <th>Sport</th>
+                    <th>Played at</th>
+                    <th>Status</th>
+                    <th>Score</th>
+                    <th>Stats</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var match in Model.Matches)
+            {
+                <tr>
+                    <td>@match.HomeTeamName – @match.AwayTeamName</td>
+                    <td>@(match.TournamentName ?? "—")</td>
+                    <td>@match.MatchKind</td>
+                    <td>@match.Sport</td>
+                    <td>@match.PlayedAt.ToLocalTime().ToString("g")</td>
+                    <td>@match.Status</td>
+                    <td>@(match.HomeScore?.ToString() ?? "—") – @(match.AwayScore?.ToString() ?? "—")</td>
+                    <td>
+                        <a asp-action="Stats" asp-route-id="@match.MatchId" target="_blank" rel="noopener noreferrer">
+                            View JSON
+                        </a>
+                    </td>
+                    <td>
+                        <div class="d-flex flex-wrap gap-2">
+                            <a asp-action="Details" asp-route-id="@match.MatchId">Details</a>
+                            <a asp-action="Edit" asp-route-id="@match.MatchId">Edit</a>
+                            <a asp-action="Delete" asp-route-id="@match.MatchId" class="text-danger">Delete</a>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="table-light">
+                    <td colspan="9">
+                        <details>
+                            <summary>Forecasts (@match.Forecasts.Count)</summary>
+                            @if (match.Forecasts.Count == 0)
+                            {
+                                <p class="text-muted mt-2 mb-0">No forecasts have been submitted.</p>
+                            }
+                            else
+                            {
+                                <div class="table-responsive mt-2">
+                                    <table class="table table-sm mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th>User id</th>
+                                                <th>Predicted home score</th>
+                                                <th>Predicted away score</th>
+                                                <th>Submitted at</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        @foreach (var forecast in match.Forecasts)
+                                        {
+                                            <tr>
+                                                <td>@forecast.UserId</td>
+                                                <td>@forecast.PredictedHomeScore</td>
+                                                <td>@forecast.PredictedAwayScore</td>
+                                                <td>@forecast.SubmittedAt.ToLocalTime().ToString("g")</td>
+                                            </tr>
+                                        }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+                        </details>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+}
+
+<nav aria-label="Match pages" class="d-flex align-items-center justify-content-between">
+    <a class="btn btn-outline-secondary @(Model.HasPreviousPage ? "" : "disabled")"
+       asp-action="Index"
+       asp-route-pageNumber="@(Model.PageNumber - 1)"
+       asp-route-pageSize="@Model.PageSize"
+       asp-route-tournamentId="@Model.TournamentId"
+       asp-route-teamId="@Model.TeamId"
+       aria-disabled="@(!Model.HasPreviousPage)">
+        Previous
+    </a>
+    <span>Page @(Model.TotalPages == 0 ? 0 : Model.PageNumber) of @Model.TotalPages</span>
+    <a class="btn btn-outline-secondary @(Model.HasNextPage ? "" : "disabled")"
+       asp-action="Index"
+       asp-route-pageNumber="@(Model.PageNumber + 1)"
+       asp-route-pageSize="@Model.PageSize"
+       asp-route-tournamentId="@Model.TournamentId"
+       asp-route-teamId="@Model.TeamId"
+       aria-disabled="@(!Model.HasNextPage)">
+        Next
+    </a>
+</nav>

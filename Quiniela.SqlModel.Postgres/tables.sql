@@ -19,6 +19,7 @@ CREATE TYPE sport AS ENUM (
     'soccer',
     'basketball',
     'baseball',
+    'football',
     'volleyball',
     'rugby',
     'hockey'
@@ -208,9 +209,6 @@ BEGIN
             RAISE EXCEPTION 'New matches cannot have scores yet';
         END IF;
 
-        IF NEW.played_at > NOW() + INTERVAL '2 hours' THEN
-            RAISE EXCEPTION 'Match time cannot be more than 2 hours in the future';
-        END IF;
     END IF;
 
     IF TG_OP = 'UPDATE' THEN
@@ -252,7 +250,7 @@ ON matches
 FOR EACH ROW
 EXECUTE FUNCTION validate_match_state();
 
--- 4) Forecast must be submitted no earlier than 1 hour before kickoff
+-- 4) Forecasts may be submitted any time before kickoff
 CREATE OR REPLACE FUNCTION validate_forecast_submission()
 RETURNS TRIGGER AS $$
 DECLARE
@@ -264,10 +262,6 @@ BEGIN
 
     IF kick_off IS NULL THEN
         RAISE EXCEPTION 'Referenced match does not exist';
-    END IF;
-
-    IF NEW.submitted_at < kick_off - INTERVAL '1 hour' THEN
-        RAISE EXCEPTION 'Forecast cannot be submitted more than 1 hour before the match';
     END IF;
 
     IF NEW.submitted_at > kick_off THEN

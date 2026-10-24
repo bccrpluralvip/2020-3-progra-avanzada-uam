@@ -1,0 +1,23 @@
+@model Quiniela.Model.Match
+
+@{
+    ViewData["Title"] = "Delete match";
+}
+
+<h1>Delete match</h1>
+<div class="alert alert-warning">
+    Delete match @Model.MatchId, @Model.HomeTeam.Name vs @Model.AwayTeam.Name?
+    Its forecasts will also be deleted.
+</div>
+<dl class="row">
+    <dt class="col-sm-3">Tournament</dt>
+    <dd class="col-sm-9">@(Model.Tournament?.Name ?? "—")</dd>
+    <dt class="col-sm-3">Played at</dt>
+    <dd class="col-sm-9">@Model.PlayedAt.ToLocalTime().ToString("f")</dd>
+    <dt class="col-sm-3">Status</dt>
+    <dd class="col-sm-9">@Model.Status</dd>
+</dl>
+<form asp-action="Delete" asp-route-id="@Model.MatchId" method="post">
+    <button type="submit" class="btn btn-danger">Confirm delete</button>
+    <a asp-action="Details" asp-route-id="@Model.MatchId" class="btn btn-outline-secondary">Cancel</a>
+</form>

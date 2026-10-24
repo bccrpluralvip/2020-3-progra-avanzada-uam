@@ -1,0 +1,10 @@
+@model MatchStatsViewModel
+
+@{
+    ViewData["Title"] = $"Match {Model.MatchId} statistics";
+}
+
+<h1>Match @Model.MatchId statistics</h1>
+<p class="text-muted">@Model.MatchTitle</p>
+<pre class="bg-light border rounded p-3"><code>@Model.StatsJson</code></pre>
+<a asp-action="Details" asp-route-id="@Model.MatchId" class="btn btn-outline-secondary">Match details</a>

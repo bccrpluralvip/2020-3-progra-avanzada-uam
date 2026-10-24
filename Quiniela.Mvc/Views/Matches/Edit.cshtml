@@ -1,0 +1,18 @@
+@model MatchFormViewModel
+
+@{
+    ViewData["Title"] = "Edit match";
+}
+
+<h1>Edit match @Model.MatchId</h1>
+<form asp-action="Edit" asp-route-id="@Model.MatchId" method="post">
+    <partial name="_Form" model="Model" />
+    <div class="mt-4">
+        <button type="submit" class="btn btn-primary">Save changes</button>
+        <a asp-action="Details" asp-route-id="@Model.MatchId" class="btn btn-outline-secondary">Cancel</a>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

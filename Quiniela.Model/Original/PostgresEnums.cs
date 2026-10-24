@@ -10,6 +10,8 @@ public enum Sport
     Basketball,
     [PgName("baseball")]
     Baseball,
+    [PgName("football")]
+    Football,
     [PgName("volleyball")]
     Volleyball,
     [PgName("rugby")]

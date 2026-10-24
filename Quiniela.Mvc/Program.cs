@@ -1,7 +1,20 @@
+using Microsoft.EntityFrameworkCore;
+using Quiniela.Model;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+var connectionString = builder.Configuration.GetConnectionString("MySecretPostgresConnection");
+if (string.IsNullOrWhiteSpace(connectionString))
+{
+    throw new InvalidOperationException(
+        "Connection string 'MySecretPostgresConnection' is not configured.");
+}
+
+builder.Services.AddDbContext<QuinielaDbContext>(
+    options => options.UseQuinielaPostgres(connectionString));
 
 var app = builder.Build();
 

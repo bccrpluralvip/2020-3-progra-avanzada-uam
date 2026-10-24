@@ -1,0 +1,75 @@
+@model MatchFormViewModel
+@using Quiniela.Model
+
+<div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+<input asp-for="MatchId" type="hidden" />
+<div class="row g-3">
+    <div class="col-md-6">
+        <label asp-for="TournamentId" class="form-label">Tournament</label>
+        <select asp-for="TournamentId" asp-items="Model.Tournaments" class="form-select">
+            <option value="">No tournament</option>
+        </select>
+    </div>
+    <div class="col-md-3">
+        <label asp-for="MatchKind" class="form-label">Match kind</label>
+        <select asp-for="MatchKind" class="form-select">
+            @foreach (var kind in Enum.GetValues<MatchKind>())
+            {
+                <option value="@kind">@kind</option>
+            }
+        </select>
+    </div>
+    <div class="col-md-3">
+        <label asp-for="Sport" class="form-label"></label>
+        <select asp-for="Sport" class="form-select">
+            @foreach (var sport in Enum.GetValues<Sport>())
+            {
+                <option value="@sport">@sport</option>
+            }
+        </select>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="HomeTeamId" class="form-label">Home team</label>
+        <select asp-for="HomeTeamId" asp-items="Model.Teams" class="form-select">
+            <option value="">Choose a home team</option>
+        </select>
+        <span asp-validation-for="HomeTeamId" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="AwayTeamId" class="form-label">Away team</label>
+        <select asp-for="AwayTeamId" asp-items="Model.Teams" class="form-select">
+            <option value="">Choose an away team</option>
+        </select>
+        <span asp-validation-for="AwayTeamId" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="PlayedAt" class="form-label"></label>
+        <input asp-for="PlayedAt" type="datetime-local" value="@Model.PlayedAt.ToString("yyyy-MM-ddTHH:mm")" class="form-control" />
+        <span asp-validation-for="PlayedAt" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="Status" class="form-label"></label>
+        <select asp-for="Status" class="form-select">
+            @foreach (var status in Enum.GetValues<MatchStatus>())
+            {
+                <option value="@status">@status</option>
+            }
+        </select>
+        <span asp-validation-for="Status" class="text-danger"></span>
+    </div>
+    <div class="col-md-2">
+        <label asp-for="HomeScore" class="form-label">Home score</label>
+        <input asp-for="HomeScore" class="form-control" />
+        <span asp-validation-for="HomeScore" class="text-danger"></span>
+    </div>
+    <div class="col-md-2">
+        <label asp-for="AwayScore" class="form-label">Away score</label>
+        <input asp-for="AwayScore" class="form-control" />
+        <span asp-validation-for="AwayScore" class="text-danger"></span>
+    </div>
+    <div class="col-12">
+        <label asp-for="StatsJson" class="form-label">Statistics (JSON)</label>
+        <textarea asp-for="StatsJson" rows="8" class="form-control font-monospace"></textarea>
+        <span asp-validation-for="StatsJson" class="text-danger"></span>
+    </div>
+</div>
