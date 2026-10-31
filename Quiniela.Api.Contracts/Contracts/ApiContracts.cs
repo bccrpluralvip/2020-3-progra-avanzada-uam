@@ -69,6 +69,13 @@ public sealed record MatchResponse(
     TournamentReferenceResponse? Tournament,
     IReadOnlyList<ForecastReferenceResponse> Forecasts);
 
+/// <summary>A filtered, paged collection of matches.</summary>
+public sealed record MatchSearchResponse(
+    int PageNumber,
+    int PageSize,
+    int TotalCount,
+    IReadOnlyList<MatchResponse> Matches);
+
 /// <summary>Payload for creating or replacing a team.</summary>
 public sealed record TeamRequest
 {

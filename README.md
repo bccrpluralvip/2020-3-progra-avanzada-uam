@@ -10,6 +10,8 @@ The business-logic project provides asynchronous CRUD operations for `Forecast`,
 
 Each service provides `InsertAsync`, `UpdateAsync`, `DeleteAsync` (by primary key), `GetByIdAsync`, and a paged `GetAllAsync` (page 1, 10 records by default). Primary-key and paged queries include only the entity's immediate navigation properties. Collection elements and referenced entities are not expanded further, preventing recursive navigation loading.
 
+`MatchBusinessLogic.SearchAsync` returns a chronologically sorted page of matches with an optional tournament filter, optional participating-team filter, and total match count.
+
 ### Queries
 
 The `Quiniela.BusinessLogic.Queries` namespace contains read-only, projection-based queries that go beyond single-entity lookups.
@@ -48,10 +50,12 @@ The solution includes two independently runnable implementations of the same RES
 - `Quiniela.Api` uses ASP.NET Core controllers. Resource-specific controllers are in `Quiniela.Api/Controllers`; shared CRUD action methods live in `CrudControllerBase`. Custom match-query actions are in `MatchQueriesController`.
 - `Quiniela.MinimalApi` uses ASP.NET Core Minimal APIs, with endpoint maps in `Quiniela.MinimalApi/Endpoints`.
 
-Both expose CRUD for forecasts, matches, teams, tournaments, tournament participants, and users, plus these custom query routes:
+Both expose CRUD for forecasts, matches, teams, tournaments, tournament participants, and users, plus these shared custom query routes:
 
 - `GET /api/queries/matches/by-tournament/{tournamentId}?pageNumber=1&pageSize=10`
 - `GET /api/queries/matches/by-team/{teamId}?from={dateTimeOffset}&to={dateTimeOffset}&pageNumber=1&pageSize=10`
+
+The controller API also exposes `GET /api/matches/search?pageNumber=1&pageSize=10&tournamentId={id}&teamId={id}` for combined match filters.
 
 Each CRUD resource supports paged `GET /api/{resource}?pageNumber=1&pageSize=10`, `GET /api/{resource}/{id}`, `POST`, `PUT /api/{resource}/{id}`, and `DELETE /api/{resource}/{id}`. Paging defaults to page 1 with 10 records. POST returns `201 Created`, DELETE returns `204 No Content`, and unknown IDs return `404`. Responses contain direct related records without recursively expanding navigation graphs.
 
@@ -70,6 +74,17 @@ dotnet run --project .\Quiniela.MinimalApi\Quiniela.MinimalApi.csproj
 ```
 
 The controller API listens on port 5053; the Minimal API listens on port 5052. Sample requests for each are in [Quiniela.Api.http](./Quiniela.Api/Quiniela.Api.http) and [Quiniela.MinimalApi.http](./Quiniela.MinimalApi/Quiniela.MinimalApi.http).
+
+## Quiniela.Mvc
+
+The MVC project has separate `Matches`, `Matches API`, and `Matches JS` pages. The API-backed pages use `Quiniela.Api` for match listing, filtering, details, forecasts, and CRUD. Its API URL defaults to `http://localhost:5053/` in `Quiniela.Mvc/appsettings.json`; override `Api__BaseUrl` when hosting the API elsewhere. Start the API and MVC in separate terminals, with the PostgreSQL connection string configured for both:
+
+```powershell
+$env:ConnectionStrings__MySecretPostgresConnection = "<your PostgreSQL connection string>"
+dotnet run --project .\Quiniela.Mvc\Quiniela.Mvc.csproj
+```
+
+`Matches JS` provides an AJAX-driven master/detail screen: the top grid refreshes with JavaScript `fetch` against MVC JSON actions, and selecting a match refreshes its detail and forecast grid below. The MVC actions retrieve the same match data from `Quiniela.Api`.
 
 Run it with the real scores followed by the guessed scores:
 

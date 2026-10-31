@@ -1,13 +1,15 @@
 using Microsoft.AspNetCore.Mvc;
 using Quiniela.Api.Contracts;
 using Quiniela.Api.Services;
+using Quiniela.BusinessLogic.Crud;
 
 namespace Quiniela.Api.Controllers;
 
 [ApiController]
 [Route("api/matches")]
 public sealed class MatchesController(
-    IEntityApiService<MatchRequest, MatchResponse> service) : ControllerBase
+    IEntityApiService<MatchRequest, MatchResponse> service,
+    MatchBusinessLogic matches) : ControllerBase
 {
     [HttpGet]
     [ProducesResponseType(typeof(IReadOnlyList<MatchResponse>), StatusCodes.Status200OK)]
@@ -16,6 +18,29 @@ public sealed class MatchesController(
         [FromQuery] int pageSize = 10,
         CancellationToken cancellationToken = default) =>
         Ok(await service.GetAllAsync(pageNumber, pageSize, cancellationToken));
+
+    [HttpGet("search")]
+    [ProducesResponseType(typeof(MatchSearchResponse), StatusCodes.Status200OK)]
+    public async Task<ActionResult<MatchSearchResponse>> Search(
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 10,
+        [FromQuery] int? tournamentId = null,
+        [FromQuery] int? teamId = null,
+        CancellationToken cancellationToken = default)
+    {
+        var (items, totalCount) = await matches.SearchAsync(
+            tournamentId,
+            teamId,
+            pageNumber,
+            pageSize,
+            cancellationToken);
+
+        return Ok(new MatchSearchResponse(
+            pageNumber,
+            pageSize,
+            totalCount,
+            items.Select(ApiMappings.ToResponse).ToArray()));
+    }
 
     [HttpGet("{id:int}")]
     [ProducesResponseType(typeof(MatchResponse), StatusCodes.Status200OK)]

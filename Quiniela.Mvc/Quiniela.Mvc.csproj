@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Quiniela.Api.Contracts\Quiniela.Api.Contracts.csproj" />
     <ProjectReference Include="..\Quiniela.BusinessLogic\Quiniela.BusinessLogic.csproj" />
     <ProjectReference Include="..\Quiniela.Model\Quiniela.Model.csproj" />
   </ItemGroup>

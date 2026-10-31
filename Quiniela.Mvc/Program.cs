@@ -1,10 +1,25 @@
+using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using Quiniela.Model;
+using Quiniela.Mvc.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews()
+    .AddJsonOptions(options =>
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(allowIntegerValues: false)));
+
+var matchesApiBaseUrl = builder.Configuration["Api:BaseUrl"];
+if (!Uri.TryCreate(matchesApiBaseUrl, UriKind.Absolute, out var matchesApiUri))
+{
+    throw new InvalidOperationException("Configuration value 'Api:BaseUrl' must be an absolute URI.");
+}
+
+builder.Services.AddHttpClient<MatchesApiClient>(client =>
+{
+    client.BaseAddress = matchesApiUri;
+});
 
 var connectionString = builder.Configuration.GetConnectionString("MySecretPostgresConnection");
 if (string.IsNullOrWhiteSpace(connectionString))
