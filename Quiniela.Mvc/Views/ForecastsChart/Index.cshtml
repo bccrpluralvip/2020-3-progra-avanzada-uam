@@ -1,0 +1,91 @@
+@model ForecastsChartViewModel
+@using System.Text.Json
+@using System.Globalization
+
+@{
+    ViewData["Title"] = "Forecast charts";
+    var todayUtc = DateOnly.FromDateTime(DateTime.UtcNow);
+    var selectedDateText = Model.SelectedDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+}
+
+<h1>Forecast charts</h1>
+<p class="text-muted">Explore forecast counts by UTC hour and predicted match result.</p>
+
+<form asp-controller="ForecastsChart" asp-action="Index" method="get" class="row g-3 align-items-end mb-4" id="forecast-chart-filters">
+    <div class="col-md-3">
+        <label for="sport" class="form-label">Sport</label>
+        <select id="sport" name="sport" class="form-select">
+            <option value="">Select a sport</option>
+            @foreach (var option in Model.Sports)
+            {
+                <option value="@option.Value" selected="@option.Selected">@option.Text</option>
+            }
+        </select>
+    </div>
+    <div class="col-md-3">
+        <label for="teamId" class="form-label">Team</label>
+        <select id="teamId" name="teamId" class="form-select" disabled="@(Model.SelectedSport is null)">
+            <option value="">Select a team</option>
+            @foreach (var option in Model.Teams)
+            {
+                <option value="@option.Value" selected="@option.Selected">@option.Text</option>
+            }
+        </select>
+    </div>
+    <div class="col-md-3">
+        <label for="matchId" class="form-label">Match</label>
+        <select id="matchId" name="matchId" class="form-select" disabled="@(Model.SelectedTeamId is null)">
+            <option value="">Select a match</option>
+            @foreach (var option in Model.Matches)
+            {
+                <option value="@option.Value" selected="@option.Selected">@option.Text</option>
+            }
+        </select>
+    </div>
+    <div class="col-md-2">
+        <label for="date" class="form-label">Date (UTC)</label>
+        <input id="date"
+               name="date"
+               type="date"
+               class="form-control"
+               required
+               value="@selectedDateText"
+               max="@todayUtc.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)" />
+    </div>
+    <div class="col-md-1">
+        <button type="submit" class="btn btn-primary">View</button>
+    </div>
+</form>
+
+<div id="forecast-chart-root"
+     data-selected-match-id="@Model.SelectedMatchId"
+     data-selected-date="@selectedDateText"
+     data-hub-url="@Model.HubUrl"
+     data-data-url="@Url.Action("GetChartData", "ForecastsChart")"
+     data-teams-url="@Url.Action("GetTeams", "ForecastsChart")"
+     data-matches-url="@Url.Action("GetMatches", "ForecastsChart")">
+    <p id="forecast-chart-status" class="text-muted" role="status"></p>
+    <div id="forecast-chart-empty" class="alert alert-info">
+        Select a sport, team, and match to see its forecasts.
+    </div>
+    <div id="forecast-chart-content" class="row g-4 d-none">
+        <section class="col-12 col-xl-4">
+            <h2 class="h5">Home wins</h2>
+            <svg class="forecast-chart w-100" viewBox="0 0 720 300" role="img" aria-label="Home-win forecast counts by UTC hour"></svg>
+        </section>
+        <section class="col-12 col-xl-4">
+            <h2 class="h5">Ties</h2>
+            <svg class="forecast-chart w-100" viewBox="0 0 720 300" role="img" aria-label="Tie forecast counts by UTC hour"></svg>
+        </section>
+        <section class="col-12 col-xl-4">
+            <h2 class="h5">Away wins</h2>
+            <svg class="forecast-chart w-100" viewBox="0 0 720 300" role="img" aria-label="Away-win forecast counts by UTC hour"></svg>
+        </section>
+    </div>
+    <script id="forecast-chart-data" type="application/json">@Html.Raw(JsonSerializer.Serialize(Model.DailyForecasts, JsonSerializerOptions.Web))</script>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/@@microsoft/signalr@10.0.0/dist/browser/signalr.min.js"></script>
+    <script src="~/js/forecasts-chart.js" asp-append-version="true"></script>
+}

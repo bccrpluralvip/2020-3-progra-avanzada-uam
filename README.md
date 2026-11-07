@@ -54,6 +54,9 @@ Both expose CRUD for forecasts, matches, teams, tournaments, tournament particip
 
 - `GET /api/queries/matches/by-tournament/{tournamentId}?pageNumber=1&pageSize=10`
 - `GET /api/queries/matches/by-team/{teamId}?from={dateTimeOffset}&to={dateTimeOffset}&pageNumber=1&pageSize=10`
+- `Quiniela.Api`: `GET /api/queries/forecasts/by-match/{matchId}` returns forecast counts grouped by UTC date (`yyyy/MM/dd`), hour (`0`–`23`), and result type (`1` home win, `0` tie, `-1` away win). Result type is calculated from the predicted scores.
+
+The controller API also hosts the `/hubs/forecasts` SignalR hub. Clients subscribe to a match and receive `ForecastsChanged` after a forecast is created, updated, or deleted. Configure `Cors:AllowedOrigins` with the MVC application's origin before deploying the API; Development allows the MVC launch-profile origins.
 
 The controller API also exposes `GET /api/matches/search?pageNumber=1&pageSize=10&tournamentId={id}&teamId={id}` for combined match filters.
 
@@ -77,7 +80,7 @@ The controller API listens on port 5053; the Minimal API listens on port 5052. S
 
 ## Quiniela.Mvc
 
-The MVC project has separate `Matches`, `Matches API`, and `Matches JS` pages. The API-backed pages use `Quiniela.Api` for match listing, filtering, details, forecasts, and CRUD. Its API URL defaults to `http://localhost:5053/` in `Quiniela.Mvc/appsettings.json`; override `Api__BaseUrl` when hosting the API elsewhere. Start the API and MVC in separate terminals, with the PostgreSQL connection string configured for both:
+The MVC project has separate `Matches`, `Matches API`, `Matches JS`, and `Forecast charts` pages. The forecast charts page filters by sport, team, match, and UTC date. It renders home-win, tie, and away-win hourly charts; the selected UTC day updates live through SignalR, while past days remain static. The API-backed pages use `Quiniela.Api` for match listing, filtering, details, forecasts, and CRUD. Its API URL defaults to `http://localhost:5053/` in `Quiniela.Mvc/appsettings.json`; override `Api__BaseUrl` when hosting the API elsewhere. Start the API and MVC in separate terminals, with the PostgreSQL connection string configured for both:
 
 ```powershell
 $env:ConnectionStrings__MySecretPostgresConnection = "<your PostgreSQL connection string>"

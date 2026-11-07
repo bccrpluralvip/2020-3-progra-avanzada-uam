@@ -62,6 +62,7 @@ Quiniela.Mvc/wwwroot/*
 !Quiniela.Mvc/wwwroot/js/
 Quiniela.Mvc/wwwroot/js/*
 !Quiniela.Mvc/wwwroot/js/matches-js.js
+!Quiniela.Mvc/wwwroot/js/forecasts-chart.js
 
 # Visual Studio 2017 auto generated files
 Generated\ Files/

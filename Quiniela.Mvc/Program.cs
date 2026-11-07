@@ -20,6 +20,10 @@ builder.Services.AddHttpClient<MatchesApiClient>(client =>
 {
     client.BaseAddress = matchesApiUri;
 });
+builder.Services.AddHttpClient<ForecastsChartApiClient>(client =>
+{
+    client.BaseAddress = matchesApiUri;
+});
 
 var connectionString = builder.Configuration.GetConnectionString("MySecretPostgresConnection");
 if (string.IsNullOrWhiteSpace(connectionString))

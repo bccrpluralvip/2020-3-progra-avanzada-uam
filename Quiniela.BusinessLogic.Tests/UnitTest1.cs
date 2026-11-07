@@ -1,4 +1,5 @@
 ﻿using Quiniela.BusinessLogic;
+using Quiniela.Model;
 
 namespace Quiniela.BusinessLogic.Tests;
 
@@ -34,5 +35,26 @@ public class QuinielaScorerTests
             guessedTeamBScore);
 
         Assert.Equal(expectedPoints, points);
+    }
+
+    public class ForecastCustomAttributeTests
+    {
+        [Theory]
+        [InlineData(2, 1, 1)]
+        [InlineData(1, 1, 0)]
+        [InlineData(1, 2, -1)]
+        public void ResultType_UsesPredictedScoreComparison(
+            int homeScore,
+            int awayScore,
+            int expectedResultType)
+        {
+            var forecast = new Forecast
+            {
+                PredictedHomeScore = homeScore,
+                PredictedAwayScore = awayScore
+            };
+
+            Assert.Equal(expectedResultType, forecast.ResultType);
+        }
     }
 }

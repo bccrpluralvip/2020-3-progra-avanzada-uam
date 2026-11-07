@@ -1,6 +1,7 @@
 using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using Quiniela.Api.Contracts;
+using Quiniela.Api.Hubs;
 using Quiniela.Api.Middleware;
 using Quiniela.Api.Services;
 using Quiniela.BusinessLogic.Crud;
@@ -21,10 +22,20 @@ builder.Services.AddDbContext<QuinielaDbContext>(
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(allowIntegerValues: false)));
+var allowedMvcOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
+    ?? throw new InvalidOperationException("Configuration section 'Cors:AllowedOrigins' is required.");
+builder.Services.AddCors(options =>
+    options.AddPolicy("MvcClient", policy =>
+        policy.WithOrigins(allowedMvcOrigins)
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials()));
+builder.Services.AddSignalR();
 builder.Services.AddOpenApi();
 builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<ApiExceptionHandler>();
 builder.Services.AddScoped<MatchQueryBusinessLogic>();
+builder.Services.AddScoped<ForecastQueryBusinessLogic>();
 builder.Services.AddEntityApiService<Forecast, ForecastRequest, ForecastResponse, ForecastBusinessLogic>(
     forecast => forecast.ForecastId,
     ApiMappings.ToResponse,
@@ -60,6 +71,7 @@ var app = builder.Build();
 
 app.UseExceptionHandler();
 app.UseStatusCodePages();
+app.UseCors("MvcClient");
 
 if (app.Environment.IsDevelopment())
 {
@@ -67,5 +79,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapControllers();
+app.MapHub<ForecastsChartHub>("/hubs/forecasts").RequireCors("MvcClient");
 
 app.Run();

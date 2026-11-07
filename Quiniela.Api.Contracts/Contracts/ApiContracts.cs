@@ -31,6 +31,14 @@ public sealed record ForecastResponse(
     MatchReferenceResponse Match,
     UserReferenceResponse User);
 
+/// <summary>A forecast count grouped by UTC date, hour, and predicted match result.</summary>
+public sealed record ForecastCountResponse(
+    int MatchId,
+    string Date,
+    int Hour,
+    int ResultType,
+    int Count);
+
 /// <summary>Payload for creating or replacing a match.</summary>
 public sealed record MatchRequest
 {
