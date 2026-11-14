@@ -303,6 +303,10 @@
             if (matchId !== null && subscribedMatchId !== matchId) {
                 await activeConnection.invoke("SubscribeToMatch", matchId);
                 subscribedMatchId = matchId;
+                // Catch changes made before joining the group, including while disconnected.
+                if (desiredMatchId === matchId) {
+                    await refreshCharts();
+                }
             }
 
             if (desiredMatchId !== null && subscribedMatchId === desiredMatchId) {

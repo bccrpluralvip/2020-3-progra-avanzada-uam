@@ -56,7 +56,7 @@ Both expose CRUD for forecasts, matches, teams, tournaments, tournament particip
 - `GET /api/queries/matches/by-team/{teamId}?from={dateTimeOffset}&to={dateTimeOffset}&pageNumber=1&pageSize=10`
 - `Quiniela.Api`: `GET /api/queries/forecasts/by-match/{matchId}` returns forecast counts grouped by UTC date (`yyyy/MM/dd`), hour (`0`–`23`), and result type (`1` home win, `0` tie, `-1` away win). Result type is calculated from the predicted scores.
 
-The controller API also hosts the `/hubs/forecasts` SignalR hub. Clients subscribe to a match and receive `ForecastsChanged` after a forecast is created, updated, or deleted. Configure `Cors:AllowedOrigins` with the MVC application's origin before deploying the API; Development allows the MVC launch-profile origins.
+The controller API also hosts the `/hubs/forecasts` SignalR hub. Clients subscribe to a match and receive `ForecastsChanged` after a forecast is created, updated, or deleted through the API. A background monitor also checks today's UTC chart counts every five seconds and notifies affected matches when committed database changes alter those counts, including changes made directly through SQL. The chart reloads after subscribing or reconnecting to catch changes missed while disconnected. Configure `Cors:AllowedOrigins` with the MVC application's origin before deploying the API; Development allows the MVC launch-profile origins.
 
 The controller API also exposes `GET /api/matches/search?pageNumber=1&pageSize=10&tournamentId={id}&teamId={id}` for combined match filters.
 

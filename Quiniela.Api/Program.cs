@@ -36,6 +36,7 @@ builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<ApiExceptionHandler>();
 builder.Services.AddScoped<MatchQueryBusinessLogic>();
 builder.Services.AddScoped<ForecastQueryBusinessLogic>();
+builder.Services.AddHostedService<ForecastsChartChangeMonitor>();
 builder.Services.AddEntityApiService<Forecast, ForecastRequest, ForecastResponse, ForecastBusinessLogic>(
     forecast => forecast.ForecastId,
     ApiMappings.ToResponse,
